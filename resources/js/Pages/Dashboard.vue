@@ -1,24 +1,52 @@
 <script setup>
-import { usePage } from '@inertiajs/vue3';
-const page = usePage();
-console.log(page.props.posts.data);
+import { usePage } from '@inertiajs/vue3'
+import PublicPost from './Post/PublicPost.vue'
 
-// defineProps({
-//   posts: Array,  // or type: Object, depending on your data structure
-//   LoggedUser:Object // loggedUser 
-// })
+const props = defineProps({
+    posts: Object,       // posts is usually a pagination object from Laravel (not an array)
+    LoggedUser: Object   // this can be null or an object
+});
+
 </script>
-
 <template>
-<ul>
-<li v-for="(post,i) in page.props.posts.data" :key="i">
-  {{ post.title }}
-</li>
+    <div class="container">
 
-{{ page.props.posts.links }}
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Navbar</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item active">
+                            <a class="nav-link active" href="/dashboard">My Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/dashall">All Posts</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <!-- <img :src="LoggedUser.img ? '/' + LoggedUser.img : '/uploads/default.jpg'" width="30" height="30" class="rounded-circle" /> -->
+                            <div class="header-info">
+                                <!-- <span>{{ LoggedUser.name }}</span> -->
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <button @click="logout" class="dropdown-item text-danger">Logout</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
 
-</ul>
 
+
+        <public-post :posts="posts" :LoggedUser="LoggedUser" />
+    </div>
 </template>
-<style scoped>
-</style>

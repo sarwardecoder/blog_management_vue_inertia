@@ -8,6 +8,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\BookmarkController;
 
 Route::get('/', [PostController::class, 'index'])->name('home');
+Route::get('/post/public', [PostController::class, 'publicPosts'])->name('publicPosts');
 
 Route::get('/user/register', [UserController::class, 'register'])->name('user.register');
 Route::post('/user/save', [UserController::class, 'save'])->name('user.save');

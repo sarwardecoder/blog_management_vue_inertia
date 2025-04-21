@@ -16,22 +16,42 @@ class PostController extends Controller
 {
     public function index(Request $request)
     {
-       $posts = Post::where('visibility', 'public')
-                ->with('user:id,name')
-                ->orderByDesc('id')   
-                ->paginate(3);
-                // ->get();  
-    // Manually fetch the user from session ID
-    $userId = $request->session()->get('LoggedUser');
+        $posts = Post::where('visibility', 'public')
+            ->with('user:id,name')
+            ->orderByDesc('id')
+            ->paginate(3);
+        // ->get();  
+        // Manually fetch the user from session ID
+        $userId = $request->session()->get('LoggedUser');
 
-    $user = User::select('id', 'name')->find($userId);
-    return Inertia::render('Dashboard', [
-        'posts' => $posts,
-        'LoggedUser' => $user
-    ]);
-// $data="hello from controller";
+        $user = User::select('id', 'name')->find($userId);
+
+        return Inertia::render('Dashboard', [
+            'posts' => $posts,
+            'LoggedUser' => $user
+        ]);
+        // $data="hello from controller";
 // return Inertia::render('Dashboard');
-       
+
+    }
+
+    public function publicPosts(Request $request)
+    {
+        $posts = Post::where('visibility', 'public')
+            ->with('user:id,name')
+            ->orderByDesc('id')
+            ->paginate(2);
+        // ->get();  
+// Manually fetch the user from session ID
+        $userId = $request->session()->get('LoggedUser');
+
+        $user = User::select('id', 'name')->find($userId);
+        return Inertia::render('Post/PublicPost', [
+            'posts' => $posts,
+            'LoggedUser' => $user
+        ]);
+
+        // return Inertia::render('PublicPosts');
     }
 
     public function create()
