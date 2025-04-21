@@ -1,5 +1,5 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 
 const form = useForm({
   title: '',
@@ -10,7 +10,7 @@ const form = useForm({
 })
 
 const handleSubmit = () => {
-  form.post(route('post.store'), {
+  form.post('/user/dashboard/post/store', {
     forceFormData: true,
     preserveScroll: true
   })

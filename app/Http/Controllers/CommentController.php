@@ -15,14 +15,12 @@ class CommentController extends Controller
             'body' => 'required|string',
             'parent_id' => 'nullable|exists:comments,id'
         ]);
-
         $comment = Comment::create([
             'body' => $request->body,
             'user_id' => session('LoggedUser'),
             'post_id' => $postId,
             'parent_id' => $request->parent_id
         ]);
-
         return response()->json([
             'success' => true,
             'comment' => $comment->load('user', 'replies')
