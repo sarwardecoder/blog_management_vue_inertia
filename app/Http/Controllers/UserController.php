@@ -56,7 +56,7 @@ class UserController extends Controller
         ]);
 
         $userInfo = User::where('email', $request->email)->first();
-
+        // dd($userInfo);
         if (!$userInfo) {
             return back()->with('fail', "We don't recognize your email address");
         }
@@ -69,16 +69,42 @@ class UserController extends Controller
         }
     }
 
-    public function dashboard()
+
+    public function dashboard(Request $request)
     {
-        $LoggedUser = User::with(['posts' => function ($query) {
-            $query->orderBy('id', 'desc');
-        }])->find(session('LoggedUser'));
+        $query = Post::with([
+            'user:id,name',
+            'likes',
+            'bookmarks',
+            'tags',
+            'comments.replies.user',
+            'comments.user'
+        ])->where('visibility', 'public');
+        if ($request->has('search')) {
+            $search = $request->input('search');
+
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('tags', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $posts = $query->orderBy('id', 'desc')->simplePaginate(3);
+        $LoggedUser = User::find(session('LoggedUser'));
 
         if ($LoggedUser) {
-            return Inertia::render('User/Dashboard', [
+            return Inertia::render('User/UserDashboard', [
+
+                'posts' => $posts,
                 'LoggedUser' => $LoggedUser,
             ]);
+
         } else {
             return redirect('/user/login')->with('fail', 'Please Login First');
         }
@@ -94,24 +120,24 @@ class UserController extends Controller
             'comments.replies.user',
             'comments.user'
         ])->where('visibility', 'public');
-
         if ($request->has('search')) {
             $search = $request->input('search');
 
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('content', 'like', "%{$search}%")
-                  ->orWhereHas('user', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('tags', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('content', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('tags', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
         $posts = $query->orderBy('id', 'desc')->simplePaginate(3);
         $LoggedUser = User::find(session('LoggedUser'));
+
 
         return Inertia::render('Dashall', [
             'posts' => $posts,

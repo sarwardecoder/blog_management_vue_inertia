@@ -1,13 +1,63 @@
 <script setup>
-import { usePage } from '@inertiajs/vue3'
-import PublicPost from './Post/PublicPost.vue'
+import { ref } from 'vue'
+import { useForm } from '@inertiajs/vue3'
+import PublicPost from '../Post/PublicPost.vue'
+import { router } from '@inertiajs/vue3'
 
 const props = defineProps({
-    posts: Object,       // posts is usually a pagination object from Laravel (not an array)
-    LoggedUser: Object   // this can be null or an object
-});
+    posts: Array,
+    loggedUser: Object
+})
 
+
+
+const handleSubmit = () => {
+  form.post(route('post.store'), {
+    forceFormData: true,
+    preserveScroll: true
+  })
+}
+
+const form = useForm({})
+const searchQuery = ref('')
+const commentBody = ref('')
+
+const handleLike = async (postId) => {
+    form.post(`/posts/${postId}/likes`, {
+        preserveScroll: true,
+        onSuccess: () => {
+            // Handle success if needed
+        }
+    })
+}
+
+const handleBookmark = async (postId) => {
+    form.post(`/posts/${postId}/bookmarks`, {
+        preserveScroll: true,
+        onSuccess: () => {
+            // Handle success if needed
+        }
+    })
+}
+
+const handleCommentSubmit = async (postId) => {
+    form.post(`/posts/${postId}/comments`, {
+        body: commentBody.value
+    }, {
+        preserveScroll: true,
+        onSuccess: () => {
+            commentBody.value = ''
+        }
+    })
+}
+
+const handleSearch = () => {
+    form.get('/posts', {
+        search: searchQuery.value
+    })
+}
 </script>
+
 <template>
     <div class="container">
 
@@ -27,9 +77,6 @@ const props = defineProps({
                         <li class="nav-item">
                             <a class="nav-link active" href="/user/dashall">All Posts</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="/user/login">Login Here</a>
-                        </li>
                     </ul>
                     <div class="d-flex">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
@@ -48,8 +95,13 @@ const props = defineProps({
             </div>
         </nav>
 
+<!-- user posts here  -->
+ <!-- create new post -->
+
+<button  class="btn btn-primary btn-md">   <a class="nav-link active" href="/user/dashboard/post/create">Create New Post</a>
+</button>
+ <public-post :posts="posts" :LoggedUser="LoggedUser" />
 
 
-        <public-post :posts="posts" :LoggedUser="LoggedUser" />
     </div>
 </template>

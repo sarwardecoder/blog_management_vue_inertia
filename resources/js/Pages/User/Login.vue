@@ -14,8 +14,8 @@ const errorMessage = ref('')
 const handleSubmit = () => {
     form.post('/user/check', {
         preserveScroll: true,
-        onSuccess: () => {
-            successMessage.value = 'Login successful!'
+        onSuccess: (usePage) => {
+            successMessage.value = 'Login successful from LoginVUE!'
             form.reset()
         },
         onError: (errors) => {
@@ -89,7 +89,7 @@ const handleSubmit = () => {
 
                             <!-- Register Link -->
                             <div class="text-center mt-3">
-                                <a href="/register" class="text-decoration-none">
+                                <a href="/user/register" class="text-decoration-none">
                                     Don't have an account? Register
                                 </a>
                             </div>

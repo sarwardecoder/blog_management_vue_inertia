@@ -56,7 +56,7 @@ class PostController extends Controller
 
     public function create()
     {
-        return Inertia::render('Posts/Create');
+        return Inertia::render('Post/Create');
     }
 
     public function store(Request $request)
