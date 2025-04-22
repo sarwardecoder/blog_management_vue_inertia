@@ -56,7 +56,7 @@ const handleSearch = () => {
 
       <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
             <div class="container-fluid">
-                <Link class="navbar-brand" href="/post/public">Blog Site</Link>
+                <Link class="navbar-brand" href="/">Blog Site</Link>
             </div>
         </nav>
 
@@ -136,9 +136,9 @@ const handleSearch = () => {
 
                                 <!-- Comment Form -->
                                 <div class="mb-3">
-                                    <textarea 
-                                        v-model="commentBody"
-                                        class="form-control mb-2" 
+                                    <textarea
+                                        v-model="commentBody[post.id]"
+                                        class="form-control mb-2"
                                         rows="2"
                                         placeholder="Write a comment..."
                                     ></textarea>

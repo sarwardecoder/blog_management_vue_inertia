@@ -60,14 +60,14 @@ const handleSubmit = () => {
       </div>
 
       <div class="form-group mb-3">
-        <label for="img">Change Image</label>
-        <input
+        <label for="img" class="m-2">Change Image</label>
+       <button class="btn btn-primary"> <input
           type="file"
           id="img"
           class="form-control-file"
           @change="form.img = $event.target.files[0]"
           accept="image/*"
-        />
+        /></button>
         <div v-if="props.post.img" class="mt-2">
           <img
             :src="`/${props.post.img}`"

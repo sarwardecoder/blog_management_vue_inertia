@@ -1,11 +1,19 @@
 <script setup>
-import { usePage, Link } from '@inertiajs/vue3'
+import { usePage, Link , useForm} from '@inertiajs/vue3'
 import PublicPost from './Post/PublicPost.vue'
 
 const props = defineProps({
     posts: Object,       // posts is usually a pagination object from Laravel (not an array)
     LoggedUser: Object   // this can be null or an object
 });
+const form = useForm({});
+
+const logout = ()=>{
+    form.post("/user/logout", {
+        forceFormData: true,
+        preserveScroll: true,
+    });
+}
 
 </script>
 <template>
@@ -36,8 +44,14 @@ const props = defineProps({
                             </div>
                         </Link>
                         <ul class="dropdown-menu dropdown-menu-end">
+                            
                             <li>
-                                <button @click="logout" class="dropdown-item text-danger">Logout</button>
+                                <button
+                                    @click="logout()"
+                                    class="dropdown-item text-danger"
+                                >
+                                    Logout
+                                </button>
                             </li>
                         </ul>
                     </div>
@@ -48,5 +62,6 @@ const props = defineProps({
 
 
         <public-post :posts="posts" :LoggedUser="LoggedUser" />
+        
     </div>
 </template>

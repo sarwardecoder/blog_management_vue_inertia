@@ -1,18 +1,68 @@
 <script setup>
-import { ref } from "vue";
-import { Link, useForm, router } from '@inertiajs/vue3'
-import PublicPost from "../Post/PublicPost.vue";
+import { reactive, ref } from "vue";
+import { Link, useForm, router } from "@inertiajs/vue3";
+
+import axios from "axios";
+
+const comments = ref([]); // A reactive list of comments
+
+// Fetch comments from API (assuming you need this)
+const fetchComments = async () => {
+    try {
+        const response = await axios.get("/api/comments"); // Change the URL if necessary
+        comments.value = response.data.comments;
+    } catch (error) {
+        console.error("Error fetching comments:", error);
+    }
+};
+
+// Delete a comment
+const deleteComment = async (commentId) => {
+    try {
+        const response = await axios.delete(`/comments/${commentId}`);
+        comments.value = comments.value.filter(
+            (comment) => comment.id !== commentId
+        ); // Remove comment from UI
+        alert(response.data.success);
+    } catch (error) {
+        alert(error.response.data.error); // Display error message
+    }
+};
+
+// Edit a comment
+const editComment = async (commentId) => {
+    const newBody = prompt("Enter new comment body:");
+    if (newBody) {
+        try {
+            const response = await axios.put(`/comments/${commentId}`, {
+                body: newBody,
+            });
+            const comment = comments.value.find(
+                (comment) => comment.id === commentId
+            );
+            if (comment) {
+                comment.body = newBody; // Update the comment in the list
+            }
+            alert(response.data.success);
+        } catch (error) {
+            alert(error.response.data.error);
+        }
+    }
+};
 
 const props = defineProps({
     posts: Array,
-    loggedUser: Object,
+    LoggedUser: Object,
 });
-const logout = ()=>{
+
+const form = useForm({});
+
+const logout = () => {
     form.post("/user/logout", {
         forceFormData: true,
         preserveScroll: true,
     });
-}
+};
 
 const handleSubmit = () => {
     form.post("/post/store", {
@@ -21,15 +71,11 @@ const handleSubmit = () => {
     });
 };
 
-const form = useForm({});
-const searchQuery = ref("");
-const commentBody = ref("");
-
 const handleLike = async (postId) => {
     form.post(`/posts/${postId}/likes`, {
         preserveScroll: true,
         onSuccess: () => {
-            // Handle success if needed
+            // handle like
         },
     });
 };
@@ -38,24 +84,51 @@ const handleBookmark = async (postId) => {
     form.post(`/posts/${postId}/bookmarks`, {
         preserveScroll: true,
         onSuccess: () => {
-            // Handle success if needed
+            // Handle bookmark
         },
     });
 };
-const handleCommentSubmit = async (postId) => {
-    form.post(
-        `/user/comments/${postId}`,
-        {
-            body: commentBody.value,
+const searchQuery = ref("");
+const commentBody = reactive({}); //no problem for thousand posts too
+// const handleCommentSubmit = (postId) => {
+//     const localForm = useForm({
+//         body: commentBody[postId],
+//     });
+
+//     localForm.post(`/user/comments/${postId}`, {
+//         preserveScroll: true,
+//         onSuccess: () => {
+//             commentBody[postId] = "";
+//         },
+//     });
+// };
+
+const handleCommentSubmit = (postId) => {
+    const localForm = useForm({
+        body: commentBody[postId],
+    });
+
+    localForm.post(`/user/comments/${postId}`, {
+        preserveScroll: true,
+        onSuccess: ({ props }) => {
+            const newComment = localForm.data().body;
+
+            // Find post
+            const post = props.posts.data.find((p) => p.id === postId);
+            if (post) {
+                // Push the new comment into the post.comments
+                post.comments.push({
+                    id: Date.now(), // temp ID
+                    body: newComment,
+                    user: props.LoggedUser,
+                });
+            }
+
+            commentBody[postId] = "";
         },
-        {
-            preserveScroll: true,
-            onSuccess: () => {
-                commentBody.value = "";
-            },
-        }
-    );
+    });
 };
+
 const handlePostEdit = async (postId) => {
     form.get(
         `/user/dashboard/post/edit/${postId}`,
@@ -131,13 +204,12 @@ const handleSearch = () => {
                             role="button"
                             data-bs-toggle="dropdown"
                         >
-                            <!-- <img :src="LoggedUser.img ? '/' + LoggedUser.img : '/uploads/default.jpg'" width="30" height="30" class="rounded-circle" /> -->
+                            <img :src="LoggedUser.img ? '/' + LoggedUser.img : '/uploads/default.jpg'" width="30" height="30" class="rounded-circle" />
                             <div class="header-info">
-                                <!-- <span>{{ LoggedUser.name }}</span> -->
+                                <span>{{ LoggedUser.name }}</span>
                             </div>
                         </Link>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            
                             <li>
                                 <button
                                     @click="logout()"
@@ -158,18 +230,18 @@ const handleSearch = () => {
         <button class="btn btn-primary btn-md">
             <Link class="nav-link active" href="/user/dashboard/post/create"
                 >Create New Post
-                </Link>
+            </Link>
         </button>
 
         <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
             <div class="container-fluid">
-                <Link class="navbar-brand" href="/post/public">Blog Site</Link>
+                <Link class="navbar-brand" href="/">Blog Site</Link>
             </div>
         </nav>
 
         <div class="row">
             <div class="col-12">
-                <h1 class="text-center mb-4"> Blog Site</h1>
+                <h1 class="text-center mb-4">{{ LoggedUser.name }}`s Blog Site</h1>
                 <h6 class="border-bottom pb-2 mb-4">Recent updates</h6>
 
                 <!-- Search Form -->
@@ -266,7 +338,7 @@ const handleSearch = () => {
                                 <!-- Comment Form -->
                                 <div class="mb-3">
                                     <textarea
-                                        v-model="commentBody"
+                                        v-model="commentBody[post.id]"
                                         class="form-control mb-2"
                                         rows="2"
                                         placeholder="Write a comment..."
@@ -279,20 +351,20 @@ const handleSearch = () => {
                                     </button>
                                     <button
                                         @click="handlePostEdit(post.id)"
-                                        class="btn btn-success btn-sm m-2"
+                                        class="btn btn-warning btn-sm m-2"
                                     >
                                         Post Edit
                                     </button>
                                     <button
                                         @click="handlePostDelete(post.id)"
-                                        class="btn btn-danger btn-sm "
-                                    >   
+                                        class="btn btn-danger btn-sm"
+                                    >
                                         Post Delete
                                     </button>
                                 </div>
 
                                 <!-- Comments List -->
-                                <div class="mt-3">
+                                <div class="mt-3 comment">
                                     <div
                                         v-for="comment in post.comments"
                                         :key="comment.id"
@@ -300,11 +372,53 @@ const handleSearch = () => {
                                     >
                                         <p class="mb-1">{{ comment.body }}</p>
                                         <small class="text-muted">
-                                            By
+                                            Commented by
                                             {{
                                                 comment.user?.name || "Unknown"
                                             }}
                                         </small>
+
+                                        <!-- toggle dropdown buttons for comment  -->
+                                        <div class="d-flex end-0">
+                                            <li
+                                                class="nav-link dropdown-toggle"
+                                                href="#"
+                                                role="button"
+                                                data-bs-toggle="dropdown"
+                                            >
+                                                <div class="header-info">
+                                                   
+                                                </div>
+                                            </li>
+                                            <ul
+                                                class="dropdown-menu dropdown-menu-end"
+                                            >
+                                            <li>
+                                                <button
+                                                        class="btn btn-warning btn-sm m-1"
+                                                        @click="
+                                                            editComment(
+                                                                comment.id
+                                                            )
+                                                        "
+                                                    >
+                                                        Comment Edit
+                                                    </button>
+                                            </li>
+                                                <li>
+                                                    <button
+                                                        class="btn btn-danger btn-sm"
+                                                        @click="
+                                                            deleteComment(
+                                                                comment.id
+                                                            )
+                                                        "
+                                                    >
+                                                        Comment Delete
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -315,3 +429,8 @@ const handleSearch = () => {
         </div>
     </div>
 </template>
+<style scoped>
+
+
+
+</style>

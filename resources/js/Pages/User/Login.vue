@@ -14,8 +14,8 @@ const errorMessage = ref('')
 const handleSubmit = () => {
     form.post('/user/check', {
         preserveScroll: true,
-        onSuccess: (usePage) => {
-            successMessage.value = 'Login successful from LoginVUE!'
+        onSuccess: () => {
+            // successMessage.value = 'Login successful from LoginVUE!'
             form.reset()
         },
         onError: (errors) => {
