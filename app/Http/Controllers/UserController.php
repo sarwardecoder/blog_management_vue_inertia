@@ -95,8 +95,8 @@ class UserController extends Controller
             });
         }
 
-        $posts = $query->orderBy('id', 'desc')->simplePaginate(3);
         $LoggedUser = User::find(session('LoggedUser'));
+        $posts = $query->orderBy('id', 'desc')->where('user_id', $LoggedUser->id)->simplePaginate(3);
 
         if ($LoggedUser) {
             return Inertia::render('User/UserDashboard', [

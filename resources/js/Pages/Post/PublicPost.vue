@@ -56,7 +56,7 @@ const handleSearch = () => {
 
       <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/post/public">Blog Site</a>
+                <Link class="navbar-brand" href="/post/public">Blog Site</Link>
             </div>
         </nav>
 
@@ -86,7 +86,7 @@ const handleSearch = () => {
                         <div class="card h-100">
                             <img 
                                 v-if="post.img" 
-                                :src="`/storage/${post.img}`" 
+                                :src="`/${post.img}`" 
                                 class="card-img-top" 
                                 alt="Post Image"
                                 style="height: 200px; object-fit: cover;"

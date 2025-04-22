@@ -1,7 +1,7 @@
 <script setup>
 import { router } from '@inertiajs/vue3'
 import { computed } from 'vue'
-import { usePage } from '@inertiajs/vue3'
+import { Link,usePage } from '@inertiajs/vue3'
 
 const props = defineProps({
   bookmarkedPosts: Object,
@@ -17,19 +17,19 @@ const unbookmark = (postId) => {
 
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#"><b>Blog Site</b></a>
+    <Link class="navbar-brand" href="#"><b>Blog Site</b></Link>
     <div class="collapse navbar-collapse">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item"><a class="nav-link" href="/dashboard">My Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" href="/dashall">All Posts</a></li>
-        <li class="nav-item"><a class="nav-link" href="/bookmarks">My Bookmarks</a></li>
+        <li class="nav-item"><Link class="nav-link" href="/dashboard">My Dashboard</Link></li>
+        <li class="nav-item"><Link class="nav-link" href="/dashall">All Posts</Link></li>
+        <li class="nav-item"><Link class="nav-link" href="/bookmarks">My Bookmarks</Link></li>
       </ul>
       <ul class="navbar-nav ml-auto">
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#">
+          <Link class="nav-link dropdown-toggle d-flex align-items-center" href="#">
             <img :src="LoggedUser?.img ? '/' + LoggedUser.img : '/uploads/default.jpg'" width="30" height="30" class="rounded-circle mr-2" alt="Profile">
             <span>{{ LoggedUser?.name }}</span>
-          </a>
+          </Link>
         </li>
       </ul>
     </div>

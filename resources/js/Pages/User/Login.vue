@@ -89,9 +89,9 @@ const handleSubmit = () => {
 
                             <!-- Register Link -->
                             <div class="text-center mt-3">
-                                <a href="/user/register" class="text-decoration-none">
+                                <Link href="/user/register" class="text-decoration-none">
                                     Don't have an account? Register
-                                </a>
+                                </Link>
                             </div>
                         </form>
                     </div>

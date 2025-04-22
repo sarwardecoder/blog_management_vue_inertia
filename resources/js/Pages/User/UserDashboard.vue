@@ -197,7 +197,7 @@ const handleSearch = () => {
                         <div class="card h-100">
                             <img
                                 v-if="post.img"
-                                :src="`/storage/${post.img}`"
+                                :src="`/${post.img}`"
                                 class="card-img-top"
                                 alt="Post Image"
                                 style="height: 200px; object-fit: cover"

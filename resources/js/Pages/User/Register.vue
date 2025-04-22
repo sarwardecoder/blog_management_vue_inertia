@@ -111,9 +111,9 @@ const handleSubmit = () => {
 
                             <!-- Login Link -->
                             <div class="text-center mt-3">
-                                <a href="/login" class="text-decoration-none">
+                                <Link href="/login" class="text-decoration-none">
                                     Already have an account? Login
-                                </a>
+                                </Link>
                             </div>
                         </form>
                     </div>

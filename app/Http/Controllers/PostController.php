@@ -24,6 +24,7 @@ class PostController extends Controller
         // Manually fetch the user from session ID
         $userId = $request->session()->get('LoggedUser');
 
+
         $user = User::select('id', 'name')->find($userId);
 
         return Inertia::render('Dashboard', [
@@ -110,48 +111,51 @@ class PostController extends Controller
     public function edit($id)
     {
         $post = Post::find($id);
-
-        if (!$post || session('LoggedUser') !== $post->user_id) {
+        if (!$post || !session('LoggedUser')) {
             return redirect()->route('user.dashboard')->with('error', 'Unauthorized or not found.');
+        } else {
+            return Inertia::render('Post/Edit', [
+                'post' => $post,
+
+            ]);
         }
 
-        return Inertia::render('Posts/Edit', [
-            'post' => $post
-        ]);
     }
 
     public function update(Request $request, $id)
     {
         $post = Post::find($id);
 
-        if (!$post || session('LoggedUser') !== $post->user_id) {
+        if (!$post || !session('LoggedUser')) {
             return redirect()->route('user.dashboard')->with('error', 'Unauthorized or not found.');
-        }
+        } else {
 
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'visibility' => 'required|in:public,private',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
-        ]);
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'content' => 'required|string',
+                'visibility' => 'required|in:public,private',
+                'img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            ])
+            ;
 
-        $post->title = $request->title;
-        $post->content = $request->content;
-        $post->visibility = $request->visibility;
+            $post->title = $request->title;
+            $post->content = $request->content;
+            $post->visibility = $request->visibility;
 
-        if ($request->hasFile('img')) {
-            if ($post->img && file_exists(public_path($post->img))) {
-                unlink(public_path($post->img));
+            if ($request->hasFile('img')) {
+                if ($post->img && file_exists(public_path($post->img))) {
+                    unlink(public_path($post->img));
+                }
+
+                $img = $request->file('img');
+                $imageName = time() . '.' . $img->getClientOriginalExtension();
+                $img->move(public_path('uploads'), $imageName);
+                $post->img = 'uploads/' . $imageName;
             }
 
-            $img = $request->file('img');
-            $imageName = time() . '.' . $img->getClientOriginalExtension();
-            $img->move(public_path('uploads'), $imageName);
-            $post->img = 'uploads/' . $imageName;
+            $post->save();
+
+            return redirect()->route('user.dashboard')->with('success', 'Post Updated Successfully');
         }
-
-        $post->save();
-
-        return redirect()->route('user.dashboard')->with('success', 'Post Updated Successfully');
     }
 }

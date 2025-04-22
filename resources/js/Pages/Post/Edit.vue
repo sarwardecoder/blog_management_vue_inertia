@@ -1,7 +1,6 @@
 <script setup>
-import { ref } from 'vue'
-import { Link, useForm } from '@inertiajs/vue3'
-import { defineProps } from 'vue'
+import { Link, useForm, usePage } from '@inertiajs/vue3'
+import { ref, defineProps } from 'vue'
 
 const props = defineProps({
   post: Object,
@@ -13,11 +12,12 @@ const form = useForm({
   title: props.post.title,
   content: props.post.content,
   visibility: props.post.visibility,
-  img: null
+  img: null,
+  '_method' : 'PUT'
 })
 
 const handleSubmit = () => {
-  form.post(route('post.update', props.post.id), {
+  form.post(`/user/dashboard/post/update/${props.post.id}`, {
     method: 'put',
     forceFormData: true,
     preserveScroll: true
@@ -29,8 +29,8 @@ const handleSubmit = () => {
   <div class="container">
     <h1>Edit Post</h1>
 
-    <div v-if="$page.props.flash.error" class="alert alert-danger">
-      {{ $page.props.flash.error }}
+    <div v-if="usePage().props.flash.error" class="alert alert-danger">
+      {{ usePage().props.flash.error }}
     </div>
 
     <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
@@ -70,7 +70,7 @@ const handleSubmit = () => {
         />
         <div v-if="props.post.img" class="mt-2">
           <img
-            :src="`/storage/${props.post.img}`"
+            :src="`/${props.post.img}`"
             alt="Current Image"
             class="img-fluid mb-2"
             style="max-height: 300px"

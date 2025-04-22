@@ -1,4 +1,5 @@
 <script setup>
+import { usePage, Link } from '@inertiajs/vue3';
 defineProps({
   comment: Object,
   post: Object,
@@ -24,13 +25,13 @@ defineProps({
       </button>
     </form>
 
-    <a
+    <Link
       href="#"
       class="reply-toggle text-primary d-block mt-2"
       style="font-size: 0.9rem;"
     >
       Reply
-    </a>
+    </Link>
 
     <!-- Reply Form -->
     <form
