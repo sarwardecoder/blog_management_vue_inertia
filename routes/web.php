@@ -8,6 +8,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\BookmarkController;
 
 Route::get('/', [PostController::class, 'index'])->name('home');
+
 Route::get('/post/public', [PostController::class, 'publicPosts'])->name('publicPosts');
 
 Route::get('/user/register', [UserController::class, 'register'])->name('user.register');
@@ -25,12 +26,13 @@ Route::middleware(['AuthCheck'])->group(function () {
     Route::get('/bookmarks', [BookmarkController::class, 'bookmarkedPosts'])->name('user.bookmarks');
     Route::post('/bookmarks/toggle/{post}', [BookmarkController::class, 'toggle'])->name('bookmark.toggle');
 
-    Route::post('/post/like-toggle', [LikeController::class, 'toggle'])->name('post.like.toggle');
+    Route::post('/post/{postId}/like', [LikeController::class, 'postLike'])->name('post.like.toggle');
 
     Route::middleware(['web'])->group(function () {
 
 
         Route::post('/user/comments/{postId}', [CommentController::class, 'store'])->name('comments.store');
+        Route::put('/comments/{comment}', [CommentController::class, 'editComment'])->name('comments.edit');
         Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
         Route::get('/comments/{postId}', [CommentController::class, 'getComments'])->name('comments.index');
         Route::get('/user/dashboard/post/edit/{id}', [PostController::class, 'edit'])->name('post.edit');

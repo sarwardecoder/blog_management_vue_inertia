@@ -19,19 +19,19 @@ class PostController extends Controller
         $posts = Post::where('visibility', 'public')
             ->with('user:id,name')
             ->orderByDesc('id')
-            ->paginate(3);
-        // ->get();  
+            // ->paginate(3);
+        ->get();     
         // Manually fetch the user from session ID
-        $userId = $request->session()->get('LoggedUser');
+        // $userId = $request->session()->get('LoggedUser');
 
 
-        $user = User::select('id', 'name')->find($userId);
+        // $user = User::select('id', 'name')->find($userId);
 
-        return Inertia::render('Dashboard', [
+        return Inertia::render('HomePage', [
             'posts' => $posts,
-            'LoggedUser' => $user
+            // 'LoggedUser' => $user
         ]);
-        // $data="hello from controller";
+        
 // return Inertia::render('Dashboard');
 
     }

@@ -2,18 +2,29 @@
 namespace App\Http\Controllers;
 use App\Models\Like;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class LikeController extends Controller{
-    public function toggle(Request $request){
+    public function postLike($postId){
         $userId = session('LoggedUser');
-        $postId = $request->input('post_id');
-        $like = Like::where('user_id', $userId)->where('post_id', $postId)->first();
+        $like = Like::where('user_id', $userId)->where('post_id', $postId)->exists();
+        dd($like);
         if ($like) {
             $like->delete(); // Unlike
         } else {
             Like::create(['user_id' => $userId, 'post_id' => $postId]); // Like
         }
-        $likeCount = Like::where('post_id', $postId)->count();
-        return response()->json(['liked' => !$like, 'likeCount' => $likeCount]);
+        // $likeCount = Like::where('post_id', $postId)->count();
+        $likeCount=true;
+        return Inertia::render('/User/UserDashboard', [
+            'like' => $like,
+            'likeCount' => $likeCount
+            
+        ]);        
     }
+    public static function likeApi($postId){
+
+    }
+
 }
+

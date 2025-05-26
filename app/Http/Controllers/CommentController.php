@@ -33,6 +33,36 @@ return Inertia::render('UserDashboard', [
 ]);
     }
 
+    public function editComment(Request $request, $commentId)
+{
+    // Validate input (e.g., body must be a non-empty string)
+    $request->validate([
+        'body' => 'required|string',
+    ]);
+
+    // Find the comment by ID
+    $comment = Comment::find($commentId);
+
+    if (!$comment) {
+        return response()->json(['error' => 'Comment not found'], 404);
+    }
+
+    // Check if the logged user is the owner of the comment
+    if ($comment->user_id !== session('LoggedUser')) {
+        return response()->json(['error' => 'Unauthorized'], 403);
+    }
+
+    // Update the comment body
+    $comment->body = $request->input('body');
+    $comment->save();
+
+    // Return a success response with the updated comment
+    return response()->json([
+        'success' => 'Comment Updated',
+        'comment' => $comment->load('user', 'replies') // You can include relationships like user and replies if needed
+    ]);
+}
+
     // Delete a comment
     public function destroy(Comment $comment)
     {
@@ -42,7 +72,7 @@ return Inertia::render('UserDashboard', [
 
         $comment->delete();
 
-        return response()->json(['success' => true]);
+        return response()->json(['success' => 'Comment deleted']);
     }
 
     // Optional: get all comments with nested replies for a post

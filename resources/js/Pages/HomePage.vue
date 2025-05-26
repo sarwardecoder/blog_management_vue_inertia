@@ -24,7 +24,7 @@ const logout = ()=>{
     <div class="container">
  <!--  NavBar -->
 
-            <NavBar :LoggedUser="LoggedUser" />
+            <!-- <NavBar :LoggedUser="LoggedUser" /> -->
 
 <!--  NavBar Ends here-->
 
