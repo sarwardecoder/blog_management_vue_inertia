@@ -30,8 +30,16 @@ const commentBody = ref('')
         <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
             <div class="container-fluid">
                 <Link class="navbar-brand" href="/">Blog Site</Link>
+<button class="btn btn-primary btn-md">                <Link class="nav-link rounded bg-primary" href="/user/login">Login</Link>
+</button>
             </div>
         </nav>
+         <button class="btn btn-primary btn-md">
+            <Link class="nav-link active" href="/user/dashboard/post/create">Create New Post
+            </Link>
+        </button>
+
+
 
         <div class="row">
             <div class="col-12">

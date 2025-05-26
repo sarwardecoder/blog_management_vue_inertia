@@ -7,7 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\BookmarkController;
 
-Route::get('/', [PostController::class, 'index'])->name('home');
+Route::get('/', [PostController::class, 'publicPosts'])->name('home');
 
 Route::get('/post/public', [PostController::class, 'publicPosts'])->name('publicPosts');
 

@@ -22,14 +22,13 @@ class PostController extends Controller
             // ->paginate(3);
         ->get();     
         // Manually fetch the user from session ID
-        // $userId = $request->session()->get('LoggedUser');
+        $userId = $request->session()->get('LoggedUser');
 
 
-        // $user = User::select('id', 'name')->find($userId);
+        $user = User::select('id', 'name')->find($userId);
 
-        return Inertia::render('HomePage', [
+        return Inertia::render('Post/PublicPost', [
             'posts' => $posts,
-            // 'LoggedUser' => $user
         ]);
         
 // return Inertia::render('Dashboard');
